@@ -1,0 +1,43 @@
+{
+  "latest": "1.0.3",
+  "channel": "stable",
+
+  "windows": {
+    "version": "1.0.3",
+    "build": "1030",
+    "filename": "LayersShift-Setup-1.0.3.exe",
+    "releaseDate": "2026-07-23",
+    "url": "https://github.com/AbdullahAlkzaz/layers-shift/releases/download/v1.0.3/Layers.Shift-windows.exe",
+    "size": "86 MB",
+    "installedSize": "190 MB",
+    "requirement": "Windows 10 64-bit or later",
+    "sha256": "9f4a2b7e1c3d5f8a0b6c9d2e4f7a1b3c5d8e0f2a4b6c8d0e2f4a6b8c0d2e4f6a",
+    "signed": true,
+    "releaseNotes": [
+      "Improved variable data merge performance on large batch jobs.",
+      "Fixed an issue where license activation could fail on first launch.",
+      "Added Arabic language support across the main workspace.",
+      "General stability and bug fixes."
+    ]
+  },
+
+  "macos": {
+    "version": "1.0.3",
+    "build": "1030",
+    "filename": "LayersShift-1.0.3.dmg",
+    "releaseDate": "2026-07-23",
+    "url": "https://github.com/AbdullahAlkzaz/layers-shift/releases/download/v1.0.3/Layers.Shift-mac.dmg",
+    "size": "74 MB",
+    "installedSize": "165 MB",
+    "requirement": "macOS 12 Monterey or later",
+    "arch": "Universal (Apple Silicon + Intel)",
+    "sha256": "2c6e8a0d4f7b1c3e5a9d2f4b6c8e0a2d4f6b8c0e2a4d6f8b0c2e4a6d8f0b2c4e",
+    "signed": true,
+    "releaseNotes": [
+      "Improved variable data merge performance on large batch jobs.",
+      "Fixed an issue where license activation could fail on first launch.",
+      "Added Arabic language support across the main workspace.",
+      "General stability and bug fixes."
+    ]
+  }
+}
