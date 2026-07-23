@@ -33,7 +33,7 @@
 (function () {
   "use strict";
 
-  var RELEASES_URL = "releases.json";
+  var RELEASES_URL = "/releases.json";
   var REDIRECT_DELAY_MS = 1100;
 
   // Used only if releases.json can't be fetched (e.g. opened via file://),
