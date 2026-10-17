@@ -1,11 +1,11 @@
 {
-  "latest": "1.0.3",
+  "latest": "1.0.4",
   "channel": "stable",
 
   "windows": {
     "version": "1.0.4",
     "build": "1030",
-    "filename": "LayersShift-Setup-1.0.3.exe",
+    "filename": "LayersShift-Setup-1.0.4.exe",
     "releaseDate": "2026-07-23",
     "url": "https://github.com/AbdullahAlkzaz/layers-shift/releases/download/v1.0.4/Layers.Shift-windows.exe",
     "size": "127 MB",
@@ -24,7 +24,7 @@
   "macos": {
     "version": "1.0.4",
     "build": "1030",
-    "filename": "LayersShift-1.0.3.dmg",
+    "filename": "LayersShift-1.0.4.dmg",
     "releaseDate": "2026-07-23",
     "url": "https://github.com/AbdullahAlkzaz/layers-shift/releases/download/v1.0.4/Layers.Shift-mac.dmg",
     "size": "106 MB",
