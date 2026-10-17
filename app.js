@@ -14,14 +14,14 @@
    {
      "windows": {
        "version": "2.4.1",
-       "url": "https://github.com/AbdullahAlkzaz/layers-shift/releases/download/v1.0.3/Layers.Shift-windows.exe",
+       "url": "https://github.com/AbdullahAlkzaz/layers-shift/releases/download/v1.0.4/Layers.Shift-windows.exe",
        "size": "86 MB",
        "requirement": "Windows 10 64-bit or later",
        "releaseDate": "2026-06-12"
      },
      "macos": {
        "version": "2.4.1",
-       "url": "https://github.com/AbdullahAlkzaz/layers-shift/releases/download/v1.0.3/Layers.Shift-mac.dmg",
+       "url": "https://github.com/AbdullahAlkzaz/layers-shift/releases/download/v1.0.4/Layers.Shift-mac.dmg",
        "size": "74 MB",
        "requirement": "macOS 12 Monterey or later",
        "arch": "Universal (Apple Silicon + Intel)",
