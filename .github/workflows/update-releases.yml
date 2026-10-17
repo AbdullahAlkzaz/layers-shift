@@ -1,0 +1,115 @@
+name: Update releases.json
+
+# Runs whenever a Release is published on GitHub.
+# It reads the release assets, computes size + SHA-256, takes the release
+# notes from the release description, and commits releases.json to main.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (e.g. v1.0.5). Leave empty to use the latest release."
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-releases-json
+  cancel-in-progress: false
+
+env:
+  WIN_ASSET: Layers.Shift-windows.exe
+  MAC_ASSET: Layers.Shift-mac.dmg
+
+jobs:
+  update:
+    if: github.event_name == 'workflow_dispatch' || (github.event.release.prerelease == false && github.event.release.draft == false)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Resolve release
+        id: rel
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_INPUT: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          TAG="$TAG_INPUT"
+          if [ -z "$TAG" ]; then
+            TAG=$(gh release view --json tagName -q .tagName)
+          fi
+          gh release view "$TAG" --json tagName,publishedAt,body > release.json
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Download assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p assets
+          gh release download "${{ steps.rel.outputs.tag }}" \
+            --pattern "$WIN_ASSET" --pattern "$MAC_ASSET" --dir assets
+          ls -l assets
+
+      - name: Update releases.json
+        run: |
+          set -euo pipefail
+
+          TAG="${{ steps.rel.outputs.tag }}"
+          VERSION="${TAG#v}"
+          DATE=$(jq -r '.publishedAt[:10]' release.json)
+          REPO="${{ github.repository }}"
+          BASE="https://github.com/$REPO/releases/download/$TAG"
+
+          # Release notes = every bullet line ("- ..." or "* ...") in the release description
+          NOTES=$(jq -c '
+            .body // "" | gsub("\r"; "") | split("\n")
+            | map(select(test("^\\s*[-*] ")))
+            | map(sub("^\\s*[-*] +"; ""))
+          ' release.json)
+
+          human_size() { awk -v b="$1" 'BEGIN { printf "%d MB", (b / 1048576) + 0.5 }'; }
+
+          WIN_BYTES=$(stat -c%s "assets/$WIN_ASSET")
+          MAC_BYTES=$(stat -c%s "assets/$MAC_ASSET")
+          WIN_SHA=$(sha256sum "assets/$WIN_ASSET" | cut -d' ' -f1)
+          MAC_SHA=$(sha256sum "assets/$MAC_ASSET" | cut -d' ' -f1)
+
+          jq \
+            --arg ver "$VERSION" --arg date "$DATE" --argjson notes "$NOTES" \
+            --arg winUrl "$BASE/$WIN_ASSET" --arg winFile "$WIN_ASSET" \
+            --arg winSize "$(human_size "$WIN_BYTES")" --arg winSha "$WIN_SHA" \
+            --arg macUrl "$BASE/$MAC_ASSET" --arg macFile "$MAC_ASSET" \
+            --arg macSize "$(human_size "$MAC_BYTES")" --arg macSha "$MAC_SHA" '
+            .latest = $ver
+            | .channel = "stable"
+            | .windows += {
+                version: $ver, filename: $winFile, releaseDate: $date,
+                url: $winUrl, size: $winSize, sha256: $winSha,
+                releaseNotes: $notes
+              }
+            | .macos += {
+                version: $ver, filename: $macFile, releaseDate: $date,
+                url: $macUrl, size: $macSize, sha256: $macSha,
+                releaseNotes: $notes
+              }
+          ' releases.json > releases.new.json
+          mv releases.new.json releases.json
+          cat releases.json
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add releases.json
+          if git diff --cached --quiet; then
+            echo "releases.json is already up to date."
+            exit 0
+          fi
+          git commit -m "chore: update releases.json for ${{ steps.rel.outputs.tag }}"
+          git push
